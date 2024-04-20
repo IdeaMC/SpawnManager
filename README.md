@@ -1,3 +1,7 @@
+# SpawnManager
+玩家spawn管理器
+
+```yaml
 # 禁止重复的优先级
 # 设置优先级最好每次+10 -10
 #
@@ -21,3 +25,4 @@ group:
     Respawn: "world 0.00 0.00 0.00 0.00 0.00"
     FirstJoin: "world -213.52 67.00 80.55 0 0"
     Join: "world 0.00 0.00 0.00 0.00 0.00"
+```

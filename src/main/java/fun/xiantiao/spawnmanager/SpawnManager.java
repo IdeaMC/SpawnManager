@@ -1,6 +1,7 @@
 package fun.xiantiao.spawnmanager;
 
 import com.sun.istack.internal.NotNull;
+import fun.xiantiao.spawnmanager.listener.Join;
 import fun.xiantiao.spawnmanager.listener.Respawn;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,6 +18,7 @@ import static fun.xiantiao.spawnmanager.GroupSpawn.SpawnType;
  * @author 40482
  */
 public final class SpawnManager extends JavaPlugin implements Listener {
+    static SpawnManager instance;
 
     //优先级与单个GroupSpawn管理器
     // 这里不使用List是因为需要TreeMap进行优先级排序
@@ -28,6 +30,8 @@ public final class SpawnManager extends JavaPlugin implements Listener {
         saveDefaultConfig();
         reloadConfig();
 
+        instance = this;
+
         groupSpawns =  new TreeMap<>(Collections.reverseOrder()); // groupSpawns为降序
         // 读取所有group的key
         for (String group : getConfig().getConfigurationSection("group").getKeys(false)) {
@@ -38,8 +42,15 @@ public final class SpawnManager extends JavaPlugin implements Listener {
             GroupSpawn groupSpawn = new GroupSpawn(group,priority);
 
             // 组的重生点
-            Location respawn = serializeLocation(getConfig().getString("group." + group + ".Respawn"));
-            groupSpawn.setRespawn(SpawnType.RESPAWN,respawn);
+            Location RESPAWN = serializeLocation(getConfig().getString("group." + group + ".Respawn"));
+            groupSpawn.setRespawn(SpawnType.RESPAWN,RESPAWN);
+            // 组的首次加入点
+            Location FIRSTJOIN = serializeLocation(getConfig().getString("group." + group + ".FirstJoin"));
+            groupSpawn.setRespawn(SpawnType.FIRSTJOIN,FIRSTJOIN);
+            // 组的加入点
+            Location JOIN = serializeLocation(getConfig().getString("group." + group + ".Join"));
+            groupSpawn.setRespawn(SpawnType.JOIN,JOIN);
+
 
             // 添加
             groupSpawns.put(priority,groupSpawn);
@@ -47,18 +58,17 @@ public final class SpawnManager extends JavaPlugin implements Listener {
 
         // 注册事件
         getServer().getPluginManager().registerEvents(new Respawn(),this);
+        getServer().getPluginManager().registerEvents(new Join(),this);
 
         // info
         getLogger().info("info");
         // 获取所有组
         for (GroupSpawn groupSpawn : groupSpawns.values()) {
-
-            Location location = groupSpawn.getSpawn().get(SpawnType.RESPAWN);
-            if (location != null) {
-                getLogger().info("  group: "+groupSpawn.getGroup());
-                getLogger().info("    priority: "+groupSpawn.getPriority());
-                getLogger().info("      RESPAWN: "+ deserializationLocation(location));
-            }
+            getLogger().info("  group: "+groupSpawn.getGroup());
+            getLogger().info("    priority: "+groupSpawn.getPriority());
+            getLogger().info("      RESPAWN:   "+ deserializationLocation(groupSpawn.getSpawn().get(SpawnType.RESPAWN)));
+            getLogger().info("      FIRSTJOIN: "+ deserializationLocation(groupSpawn.getSpawn().get(SpawnType.FIRSTJOIN)));
+            getLogger().info("      JOIN:      "+ deserializationLocation(groupSpawn.getSpawn().get(SpawnType.JOIN)));
         }
     }
 
@@ -86,6 +96,10 @@ public final class SpawnManager extends JavaPlugin implements Listener {
      */
     @NotNull public static Map<Long, GroupSpawn> getGroupSpawns() {
         return groupSpawns;
+    }
+
+    public static SpawnManager getInstance() {
+        return instance;
     }
 
     private Location serializeLocation(String locationString) {

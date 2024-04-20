@@ -19,11 +19,8 @@ public final class Respawn implements Listener {
     @EventHandler
     public void playerRespawnEvent(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        player.sendMessage(getPlayerGroups(player).toString());
-
         // 迭代插件所有group
         for (GroupSpawn value : getGroupSpawns().values()) {
-            player.sendMessage("value "+ value.getGroup());
             // 如果玩家在这个组里面
             if (getPlayerGroups(player).contains(value.getGroup())) {
                 Location location = value.getSpawn().get(GroupSpawn.SpawnType.RESPAWN);

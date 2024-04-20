@@ -51,6 +51,6 @@ public class GroupSpawn {
     }
 
     public enum SpawnType {
-        RESPAWN
+        RESPAWN,FIRSTJOIN,JOIN
     }
 }
