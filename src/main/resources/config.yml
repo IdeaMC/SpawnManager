@@ -1,0 +1,14 @@
+# 禁止重复的优先级
+# 设置优先级最好每次+10 -10
+
+group:
+  # 默认组
+  default:
+    # 优先级
+    priority: 50
+    # (World world, double x, double y, double z, float yaw, float pitch)
+    Respawn: "world -208 67 77 0 0"
+  # 组 (group.admin)
+  admin:
+    priority: 100
+    Respawn: "world -208 67 77"

@@ -1,0 +1,7 @@
+name: SpawnManager
+version: '${project.version}'
+main: fun.xiantiao.spawnmanager.SpawnManager
+api-version: '1.13'
+authors: [xiantiao]
+description: 管理出生点，重生点
+website: https://github.com/IdeaMC/SpawnManager
