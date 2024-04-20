@@ -13,9 +13,9 @@ import java.util.Map;
  * 管理单个组的出生点
  */
 public class GroupSpawn {
-    final String group;
-    final long priority;
-    final Map<SpawnType,Location> spawn;
+    private final String group;
+    private final long priority;
+    private final Map<SpawnType,Location> spawn;
 
     /**
      * 创建
@@ -37,7 +37,20 @@ public class GroupSpawn {
     public void setRespawn(SpawnType spawner, Location respawn) {
         this.spawn.put(spawner,respawn);
     }
-    enum SpawnType {
+
+    public String getGroup() {
+        return group;
+    }
+
+    public long getPriority() {
+        return priority;
+    }
+
+    public Map<SpawnType, Location> getSpawn() {
+        return spawn;
+    }
+
+    public enum SpawnType {
         RESPAWN
     }
 }

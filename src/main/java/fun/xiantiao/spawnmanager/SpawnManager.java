@@ -20,7 +20,7 @@ public final class SpawnManager extends JavaPlugin implements Listener {
 
     //优先级与单个GroupSpawn管理器
     // 这里不使用List是因为需要TreeMap进行优先级排序
-    private Map<Long, GroupSpawn> groupSpawns;
+    private static Map<Long, GroupSpawn> groupSpawns;
     @Override
     public void onEnable() {
         getLogger().info("SpawnManager 加载中");
@@ -41,24 +41,33 @@ public final class SpawnManager extends JavaPlugin implements Listener {
             Location respawn = serializeLocation(getConfig().getString("group." + group + ".Respawn"));
             groupSpawn.setRespawn(SpawnType.RESPAWN,respawn);
 
+            // 添加
             groupSpawns.put(priority,groupSpawn);
         }
 
-
+        // 注册事件
         getServer().getPluginManager().registerEvents(new Respawn(),this);
 
-        getLogger().info("顺序");
+        // info
+        getLogger().info("info");
+        // 获取所有组
         for (GroupSpawn groupSpawn : groupSpawns.values()) {
-            Location location = groupSpawn.spawn.get(SpawnType.RESPAWN);
+
+            Location location = groupSpawn.getSpawn().get(SpawnType.RESPAWN);
             if (location != null) {
-                getLogger().info("  group: "+groupSpawn.group);
-                getLogger().info("    priority: "+groupSpawn.priority);
+                getLogger().info("  group: "+groupSpawn.getGroup());
+                getLogger().info("    priority: "+groupSpawn.getPriority());
                 getLogger().info("      RESPAWN: "+ deserializationLocation(location));
             }
         }
     }
 
-    public static List<String> getPlayerGroups(Player player) {
+    /**
+     * 获取玩家在哪些组
+     * @param player 玩家
+     * @return 组名字
+     */
+    @NotNull public static List<String> getPlayerGroups(Player player) {
         List<String> groupPermissions = new ArrayList<>();
         // 获取玩家的所有权限附件
         for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
@@ -71,7 +80,11 @@ public final class SpawnManager extends JavaPlugin implements Listener {
         return groupPermissions;
     }
 
-    public Map<Long, GroupSpawn> getGroupSpawns() {
+    /**
+     * 获取插件的组都有哪些
+     * @return 优先级与组spawn管理器
+     */
+    @NotNull public static Map<Long, GroupSpawn> getGroupSpawns() {
         return groupSpawns;
     }
 
@@ -91,6 +104,9 @@ public final class SpawnManager extends JavaPlugin implements Listener {
     }
     private String deserializationLocation(@NotNull Location location) {
         World world = location.getWorld();
+        if (world == null) {
+            return null;
+        }
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
